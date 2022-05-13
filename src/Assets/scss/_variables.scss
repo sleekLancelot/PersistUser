@@ -1,0 +1,29 @@
+$red:#da0a0a;
+$yellow:#FFD13C;
+$green: #33d5ba;
+$green2: #2BB19B;
+$blue:#6DC4F2;
+$light-green:#f2fffd;
+$lighter-green:#d3efea;
+$black:#303030;
+$grey:#7a869a;
+$grey2:#E5E5E5;
+$form-bg:#f6f6f6;
+$overlay:rgba(0, 0, 0, 0.16);
+
+
+$breakpoints: (
+    "phone-small":  320px,
+    "phone":        400px,
+    "phone-wide":   480px,
+    "phablet":      560px,
+    "tablet-small": 640px,
+    "tablet":       768px,
+    "fluid-out":    960px,
+    "tablet-wide":  1024px,
+    "desktop":      1248px,
+    "desktop-med":  1350px,
+    "desktop-wide": 1440px,
+    "max":          1500px,
+    "excess":       2000px
+);

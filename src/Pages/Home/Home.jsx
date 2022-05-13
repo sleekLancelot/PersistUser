@@ -65,7 +65,7 @@ const Home = () => {
     navigate('/login')
   }
 
-  return (
+  return isAuthenticated && (
     <div className={ styles.home }>
       <div className={ classNames( styles.bar, {
         [ styles.scroll ]: scrolling

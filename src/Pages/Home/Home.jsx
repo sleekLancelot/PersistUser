@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './Home.module.scss';
 import { setAuthentication, setProfile, setStatus } from '../../redux/slices/userSlice';
-import { getUserFromStore, removeUserFromStore, storeUser } from '../../Factory';
+import { getKeyFromStore, getLastLoggedInUser, getUserFromStore, getValueFromStore, preceding, removeUserFromStore, sessionString, storeUser } from '../../Factory';
 
 const Home = () => {
   // const [ userInfo, setUserInfo ] = useState({})
@@ -33,27 +33,39 @@ const Home = () => {
     };
   }, [] );
 
-  useEffect(() => {
-    const userDetails = getUserFromStore( userInfo )
-
-    if ( (isAuthenticated !== true || userInfo === null) && !userDetails ) {
-      navigate('/login')
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const auth = () => {
+    dispatch( setAuthentication( true ) )
+    dispatch( setStatus( 'active' ) )
+  }
 
   useEffect(() => {
-    const userDetails = getUserFromStore( userInfo )
+    const isLoggedIN = JSON.parse(sessionStorage.getItem( `${sessionString}` ))
+    console.log(isLoggedIN)
 
-    console.log(userDetails, !!userDetails, userDetails?.username === userInfo?.username, userInfo)
-
-    if ( !!userDetails ) {
-      dispatch( setProfile( userDetails ) )
-      dispatch( setAuthentication( true ) )
-      dispatch( setStatus( 'active' ) )
+    if ( !!isLoggedIN ) {
+      dispatch( setProfile( isLoggedIN ) )
+      auth()
+    } else if ( getKeyFromStore()?.length ) {
+      dispatch( setProfile( getLastLoggedInUser() ) )
+      auth()
     } else {
+      dispatch( setAuthentication( null ) )
+      dispatch( setStatus( null) )
       navigate('/login')
     }
+
+    // const userDetails = getUserFromStore( `${preceding}${userInfo?.username}` )
+
+
+    // console.log(userDetails, !!userDetails, userDetails?.username === userInfo?.username, userInfo)
+
+    // if ( !!userDetails ) {
+    //   dispatch( setProfile( userDetails ) )
+    //   dispatch( setAuthentication( true ) )
+    //   dispatch( setStatus( 'active' ) )
+    // } else {
+    //   navigate('/login')
+    // }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

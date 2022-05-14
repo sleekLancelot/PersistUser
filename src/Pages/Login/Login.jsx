@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import styles from './Login.module.scss';
 import { Link, Redirect } from 'react-router-dom';
 import { setAuthentication, setProfile, setStatus } from '../../redux/slices/userSlice';
-import { composeUserDetails, generateRandomID, storeUser } from '../../Factory';
+import { composeUserDetails, generateRandomID, sessionString, storeUser } from '../../Factory';
 
 const Login = () => {
     const [ username, setUsername ] = useState('')
@@ -15,9 +15,11 @@ const Login = () => {
 
     const onChange = (e) => setUsername(e.target.value.toLowerCase())
     const login = () => {
-        storeUser( composeUserDetails(username) )
+        const newUser = composeUserDetails(username)
+        storeUser( newUser )
+        sessionStorage.setItem( sessionString, JSON.stringify( newUser ) )
         // console.log(composeUserDetails(username))
-        dispatch( setProfile( composeUserDetails(username) ) )
+        dispatch( setProfile( newUser ) )
         dispatch( setAuthentication( true ) )
         dispatch( setStatus( 'active' ) )
         navigate('/')

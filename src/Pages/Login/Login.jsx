@@ -1,19 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import classNames from 'classnames';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import styles from './Login.module.scss';
-import { Link, Redirect } from 'react-router-dom';
-import { setAuthentication, setProfile, setStatus } from '../../redux/slices/userSlice';
-import { composeUserDetails, generateRandomID, sessionString, storeUser } from '../../Factory';
+import { 
+    setAuthentication, 
+    setProfile, 
+    setStatus,
+} from '../../redux/slices/userSlice';
+import { 
+    composeUserDetails, 
+    sessionString, 
+    storeUser,
+} from '../../Factory';
 
 const Login = () => {
     const [ username, setUsername ] = useState('')
     const dispatch = useDispatch()
     const navigate = useNavigate()  
 
-    const onChange = (e) => setUsername(e.target.value.toLowerCase())
+    const onChange = (e) => setUsername(e.target.value.toLowerCase().trim())
     const login = () => {
         const newUser = composeUserDetails(username)
         storeUser( newUser )

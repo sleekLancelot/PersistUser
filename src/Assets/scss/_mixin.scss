@@ -49,9 +49,9 @@
 @mixin SecondaryButtons($bgColor, $color , $width:200px) {
     width: $width;
     background-color: $bgColor;
-    height: $width;
+    height: 40px;
     border: 1px solid $color;
-    border-radius: 8px;
+    border-radius: 12px;
     color: $color;
     font-weight: 700;
     text-transform: capitalize;

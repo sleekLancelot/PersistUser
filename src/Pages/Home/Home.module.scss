@@ -34,4 +34,10 @@
                 }
         }
     }
+
+    .content{
+        margin: auto;
+        transform: translateY(50%);
+        @include flex-center( column );
+    }
 }

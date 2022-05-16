@@ -1,16 +1,30 @@
 import React, { useState, useEffect } from 'react'
 import classNames from 'classnames';
-import { Link, Redirect } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './Home.module.scss';
-import { setAuthentication, setProfile, setStatus } from '../../redux/slices/userSlice';
-import { getKeyFromStore, getLastLoggedInUser, getUserFromStore, getValueFromStore, preceding, removeUserFromStore, sessionString, storeUser } from '../../Factory';
+import { 
+  setAuthentication, 
+  setProfile, 
+  setStatus 
+} from '../../redux/slices/userSlice';
+import { 
+  background, 
+  foreground,
+  getKeyFromStore, 
+  getLastLoggedInUser, 
+  getUserFromStore, 
+  preceding, 
+  removeUserFromStore, 
+  sessionString, 
+} from '../../Factory';
+import Session from '../../Components/User/Session';
 
 const Home = () => {
-  // const [ userInfo, setUserInfo ] = useState({})
   const [ scrolling, isScrolling ] = useState( false )
+  const [ focus, setFocus] = useState('visible')
+  const [ sessions, setSessions ] = useState( null );
 
   const { isAuthenticated, userInfo } = useSelector((store) => store.user);;
 
@@ -33,6 +47,26 @@ const Home = () => {
     };
   }, [] );
 
+  useEffect(() => {
+    const isLoggedIN = JSON.parse(sessionStorage.getItem( `${sessionString}` ))
+
+    const setPresence = () => {
+      setFocus( document.visibilityState )
+    }
+
+    document.addEventListener("visibilitychange", setPresence)
+
+    if ( focus === 'visible' ) {
+      foreground( isLoggedIN, focus )
+    } else {
+      background( isLoggedIN )
+    }
+
+    return () => {
+      document.removeEventListener("visibilitychange", setPresence)
+    }
+  }, [focus])
+
   const auth = () => {
     dispatch( setAuthentication( true ) )
     dispatch( setStatus( 'active' ) )
@@ -40,13 +74,13 @@ const Home = () => {
 
   useEffect(() => {
     const isLoggedIN = JSON.parse(sessionStorage.getItem( `${sessionString}` ))
-    console.log(isLoggedIN)
 
     if ( !!isLoggedIN ) {
       dispatch( setProfile( isLoggedIN ) )
       auth()
     } else if ( getKeyFromStore()?.length ) {
       dispatch( setProfile( getLastLoggedInUser() ) )
+      sessionStorage.setItem( sessionString, JSON.stringify( getLastLoggedInUser() ) )
       auth()
     } else {
       dispatch( setAuthentication( null ) )
@@ -54,20 +88,47 @@ const Home = () => {
       navigate('/login')
     }
 
-    // const userDetails = getUserFromStore( `${preceding}${userInfo?.username}` )
-
-
-    // console.log(userDetails, !!userDetails, userDetails?.username === userInfo?.username, userInfo)
-
-    // if ( !!userDetails ) {
-    //   dispatch( setProfile( userDetails ) )
-    //   dispatch( setAuthentication( true ) )
-    //   dispatch( setStatus( 'active' ) )
-    // } else {
-    //   navigate('/login')
-    // }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect( () => {
+    // const isLoggedIN = JSON.parse(sessionStorage.getItem( `${sessionString}` ))
+
+    if ( userInfo !== null ) {
+      const allSessionsForThisUser = getUserFromStore(`${preceding}${userInfo?.username}`)
+
+       if ( !!allSessionsForThisUser?.length ) {
+         console.log(allSessionsForThisUser)
+        setSessions( () => allSessionsForThisUser?.filter( session => session.sessionID !== userInfo.sessionID ) );         
+       }
+    }
+
+    const register = (e) => {
+      if ( userInfo !== null ) {
+        const allSessionsForThisUser = getUserFromStore(`${preceding}${userInfo?.username}`)
+
+        if ( !!allSessionsForThisUser?.length ) {
+
+          console.log(allSessionsForThisUser)
+          setSessions( () => allSessionsForThisUser?.filter( session => session.sessionID !== userInfo.sessionID ) )
+        }
+
+        // if ( e.key === preceding + userInfo?.username ) {
+        //   console.log( JSON.parse(e) )
+        // }
+      }
+    }
+
+    window.addEventListener('storage', register)
+
+    return () => {
+      window.removeEventListener('storage', register)
+    }
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInfo])
+
+  console.log(sessions)
 
   const logout = () => {
     removeUserFromStore( userInfo )
@@ -93,6 +154,19 @@ const Home = () => {
             onClick={ logout }
           >Logout</span>
         </div>
+      </div>
+
+      <div className={ styles.content }>
+        {
+          !!sessions?.length &&
+          sessions.map( (eachSession, index) => (
+            <Session
+              key={index}
+              userInfo={eachSession}
+              callback={ (id) => setSessions( (session) => session.filter( session => session.sessionID !== id ))}
+            />
+          ))
+        }
       </div>
     </div>
   )

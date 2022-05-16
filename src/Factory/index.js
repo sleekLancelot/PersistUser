@@ -38,7 +38,7 @@ export const storeUser = ( userInfo ) => {
     }
 }
 
-export const removeUserFromStore = ( userInfo ) => {
+export const removeUserFromStore = ( userInfo, letSessionBe = false, callback ) => {
     getKeyFromStore(preceding).map( key => {
         if ( key === `${preceding}${userInfo?.username}`) {
 
@@ -58,6 +58,12 @@ export const removeUserFromStore = ( userInfo ) => {
 
     }
     })
+
+    // if ( letSessionBe ) {
+    //     callback()
+    // } else {
+    //     sessionStorage.removeItem( `${sessionString}` )        
+    // }
 
     sessionStorage.removeItem( `${sessionString}` )
 }
@@ -80,4 +86,110 @@ export const getLastLoggedInUser = () => {
 
 }
 
-console.log(getKeyFromStore()?.length)
+let timer = null,
+    idleTime = 6000
+
+export const foreground = ( userInfo, focus ) => {
+    if ( timer !== null) {
+        clearTimeout( timer )
+        timer = null
+    }
+
+    let thisUser = getUserFromStore( `${preceding}${userInfo?.username}` )
+
+    if ( Array.isArray(thisUser) ) {
+
+        // let index = thisUser?.findIndex( user => user.sessionID === userInfo.sessionID )
+
+        let thisParticularSession = thisUser?.find( user => user.sessionID === userInfo.sessionID )
+
+        // if ( thisUser[index]?.status !== 'active') {
+        if ( thisParticularSession?.status !== 'active') {
+            // let newObj = {
+            //     ...thisUser[index],
+            //     status: 'active',
+            // }
+
+            let newObj = {
+                ...thisParticularSession,
+                status: 'active',
+            }
+
+            // thisUser[index] = newObj
+
+            thisUser = thisUser.map( user => user.sessionID === newObj.sessionID ? newObj : user )
+
+            // console.log(thisUser, newObj)
+
+            localStorage.setItem(`${preceding}${userInfo?.username}`, JSON.stringify( thisUser ))
+            // sessionStorage.setItem( sessionString, JSON.stringify( thisUser[index] ) )
+            sessionStorage.setItem( sessionString, JSON.stringify( newObj ) )
+        }
+   
+    } else if ( thisUser?.sessionID === userInfo?.sessionID ) {
+        if ( thisUser?.status !== 'active' ) {
+            thisUser = {
+                ...thisUser,
+                status: 'active',
+            }
+
+            // console.log(thisUser)
+        
+            localStorage.setItem(`${preceding}${userInfo?.username}`, JSON.stringify( thisUser ))
+            sessionStorage.setItem( sessionString, JSON.stringify( thisUser ) )
+    
+            // console.log(thisUser)
+        }
+    }
+
+    // console.log(thisUser)
+}
+
+export const background = ( userInfo ) => {
+    let thisUser = getUserFromStore( `${preceding}${userInfo?.username}` )
+
+    if ( Array.isArray(thisUser) ) {
+
+        let index = thisUser?.findIndex( user => user.sessionID === userInfo.sessionID )
+
+        if ( thisUser[index]?.status !== 'inactive') {
+            let newObj = {
+                ...thisUser[index],
+                status: 'inactive',
+            }
+
+            thisUser[index] = newObj
+
+            // console.log(thisUser, newObj)
+
+            timer = setTimeout( () => {
+                localStorage.setItem(`${preceding}${userInfo?.username}`, JSON.stringify( thisUser ))
+                sessionStorage.setItem( sessionString, JSON.stringify( thisUser[index] ) )
+            }, idleTime)
+
+            // timer()
+
+        }
+
+        
+    } else if ( thisUser?.sessionID === userInfo?.sessionID ) {
+        if ( thisUser?.status !== 'inactive' ) {
+            thisUser = {
+                ...thisUser,
+                status: 'inactive',
+            }
+    
+            timer = setTimeout( () => {
+                localStorage.setItem(`${preceding}${userInfo?.username}`, JSON.stringify( thisUser ))
+                sessionStorage.setItem( sessionString, JSON.stringify( thisUser ) )
+            }, idleTime)
+
+            // timer()
+    
+            // console.log(thisUser)
+        }
+    }
+
+    // console.log(thisUser)
+
+}

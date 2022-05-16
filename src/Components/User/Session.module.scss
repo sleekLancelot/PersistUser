@@ -1,0 +1,26 @@
+@import '../../Assets/scss/index';
+
+.session{
+    @include flex-btw;
+    width: 240px;
+    max-width: 240px;
+    margin: 20px auto;
+    .icon{
+        text-transform: uppercase;
+        background: $green;
+        padding: 10px;
+        border-radius: 40%;
+        cursor: pointer;
+    }
+
+    .sessionLogout{
+        cursor: pointer;
+        @include SecondaryButtons(_,_,70px);
+    }
+
+    .logout{
+        display: none;
+    }
+
+    transition: all 1s ease-in 0.09s;
+}

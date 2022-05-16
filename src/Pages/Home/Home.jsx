@@ -78,7 +78,7 @@ const Home = () => {
     if ( !!isLoggedIN ) {
       dispatch( setProfile( isLoggedIN ) )
       auth()
-    } else if ( getKeyFromStore()?.length ) {
+    } else if ( !!getKeyFromStore()?.length ) {
       dispatch( setProfile( getLastLoggedInUser() ) )
       sessionStorage.setItem( sessionString, JSON.stringify( getLastLoggedInUser() ) )
       auth()
@@ -153,7 +153,7 @@ const Home = () => {
             className={ styles.logout }
             onClick={ logout }
           >Logout</span>
-            
+
           <span 
             className={ styles.signIn }
             onClick={ () => navigate('/login') }

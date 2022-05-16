@@ -153,6 +153,11 @@ const Home = () => {
             className={ styles.logout }
             onClick={ logout }
           >Logout</span>
+            
+          <span 
+            className={ styles.signIn }
+            onClick={ () => navigate('/login') }
+          >Sign In</span>
         </div>
       </div>
 

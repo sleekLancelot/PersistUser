@@ -31,6 +31,12 @@
                     margin-left: 10px;
                     margin-right: 10px;
                     color: $black;
+                    border-right: 1px solid $black;
+                    padding-right: 10px;
+                }
+                .signIn{
+                    color: $green;
+                    cursor: pointer;
                 }
         }
     }

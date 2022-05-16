@@ -56,16 +56,18 @@ const Home = () => {
 
     document.addEventListener("visibilitychange", setPresence)
 
-    if ( focus === 'visible' ) {
-      foreground( isLoggedIN, focus )
-    } else {
-      background( isLoggedIN )
+    if ( isAuthenticated ) {
+      if ( focus === 'visible' ) {
+        foreground( isLoggedIN, focus )
+      } else {
+        background( isLoggedIN )
+      }
     }
 
     return () => {
       document.removeEventListener("visibilitychange", setPresence)
     }
-  }, [focus])
+  }, [focus, isAuthenticated])
 
   const auth = () => {
     dispatch( setAuthentication( true ) )

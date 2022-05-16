@@ -87,7 +87,7 @@ export const getLastLoggedInUser = () => {
 }
 
 let timer = null,
-    idleTime = 6000
+    idleTime = 60000
 
 export const foreground = ( userInfo, focus ) => {
     if ( timer !== null) {

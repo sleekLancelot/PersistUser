@@ -59,13 +59,9 @@ export const removeUserFromStore = ( userInfo, letSessionBe = false, callback ) 
     }
     })
 
-    // if ( letSessionBe ) {
-    //     callback()
-    // } else {
-    //     sessionStorage.removeItem( `${sessionString}` )        
-    // }
-
-    sessionStorage.removeItem( `${sessionString}` )
+    if ( !letSessionBe ) {
+        sessionStorage.removeItem( `${sessionString}` )
+    } 
 }
 
 export const getUserFromStore = ( username ) => {
@@ -152,10 +148,10 @@ export const background = ( userInfo ) => {
 
         let index = thisUser?.findIndex( user => user.sessionID === userInfo.sessionID )
 
-        if ( thisUser[index]?.status !== 'inactive') {
+        if ( thisUser[index]?.status !== 'idle') {
             let newObj = {
                 ...thisUser[index],
-                status: 'inactive',
+                status: 'idle',
             }
 
             thisUser[index] = newObj
@@ -173,10 +169,10 @@ export const background = ( userInfo ) => {
 
         
     } else if ( thisUser?.sessionID === userInfo?.sessionID ) {
-        if ( thisUser?.status !== 'inactive' ) {
+        if ( thisUser?.status !== 'idle' ) {
             thisUser = {
                 ...thisUser,
-                status: 'inactive',
+                status: 'idle',
             }
     
             timer = setTimeout( () => {

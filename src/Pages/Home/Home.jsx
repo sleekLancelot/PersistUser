@@ -170,7 +170,7 @@ const Home = () => {
             <Session
               key={index}
               userInfo={eachSession}
-              callback={ (id) => setSessions( (session) => session.filter( session => session.sessionID !== id ))}
+              callback={ () => setSessions( (session) => session.filter( session => session.sessionID !== eachSession.sessionID ))}
             />
           ))
         }

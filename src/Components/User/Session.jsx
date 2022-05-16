@@ -11,17 +11,26 @@ const Session = ({
 }) => {
     const [ inSession, setInSession ] = useState( true )
 
+    console.log(userInfo)
+
   return (
     <div className={ styles.session}>
-        <span className={ styles.icon}>{userInfo?.username?.charAt(0) ?? 'U'}</span>
-        <span>{userInfo?.username}</span>
+        <span className={ classNames( styles.icon, {
+            [ styles.idle ]: userInfo?.status === 'idle',
+            [ styles.active ]: userInfo?.status === 'active',
+        } )}
+        >{userInfo?.username?.charAt(0) ?? 'U'}</span>
+        <div className={ styles.nameAndStatus}>
+            <span>{userInfo?.username}</span>
+            <small>{userInfo?.status}</small>
+        </div>
         <button 
             className={ classNames( styles.sessionLogout, {
                 [ styles.logout ]: !inSession
             }) }
             onClick={ () => {
                 setInSession( false )
-                callback( userInfo?.sessionID )
+                callback()
                 removeUserFromStore( userInfo, true )
             } }
         >

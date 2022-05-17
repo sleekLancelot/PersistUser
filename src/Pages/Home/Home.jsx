@@ -15,6 +15,7 @@ import {
   getKeyFromStore, 
   getLastLoggedInUser, 
   getUserFromStore, 
+  ifSessionExistInDB, 
   preceding, 
   removeUserFromStore, 
   sessionString, 
@@ -47,37 +48,18 @@ const Home = () => {
     };
   }, [] );
 
-  useEffect(() => {
-    const isLoggedIN = JSON.parse(sessionStorage.getItem( `${sessionString}` ))
-
-    const setPresence = () => {
-      setFocus( document.visibilityState )
-    }
-
-    document.addEventListener("visibilitychange", setPresence)
-
-    if ( isAuthenticated ) {
-      if ( focus === 'visible' ) {
-        foreground( isLoggedIN, focus )
-      } else {
-        background( isLoggedIN )
-      }
-    }
-
-    return () => {
-      document.removeEventListener("visibilitychange", setPresence)
-    }
-  }, [focus, isAuthenticated])
-
   const auth = () => {
     dispatch( setAuthentication( true ) )
     dispatch( setStatus( 'active' ) )
   }
 
+  /**
+   * @description what this does is persist the currently signed in user, and if they are signed out it fetches the last user that logs in,else it navigates to the login page
+   */
   useEffect(() => {
     const isLoggedIN = JSON.parse(sessionStorage.getItem( `${sessionString}` ))
 
-    if ( !!isLoggedIN ) {
+    if ( !!isLoggedIN && !!ifSessionExistInDB( isLoggedIN ) ) {
       dispatch( setProfile( isLoggedIN ) )
       auth()
     } else if ( !!getKeyFromStore()?.length ) {
@@ -93,6 +75,35 @@ const Home = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+   /**
+   * @description what this does is set the presence status of all signed in user
+   */
+  useEffect(() => {
+    const isLoggedIN = JSON.parse(sessionStorage.getItem( `${sessionString}` ))
+
+    const setPresence = () => {
+      setFocus( document.visibilityState )
+    }
+
+    
+    if ( !!ifSessionExistInDB( isLoggedIN ) ) {
+      document.addEventListener("visibilitychange", setPresence)
+      if ( focus === 'visible' ) {
+        foreground( isLoggedIN, focus )
+      } else {
+        background( isLoggedIN )
+      }
+    }
+
+    return () => {
+      document.removeEventListener("visibilitychange", setPresence)
+    }
+  }, [focus])
+
+
+   /**
+   * @description what this does is to get the list of other sessions with the same username
+   */
   useEffect( () => {
     // const isLoggedIN = JSON.parse(sessionStorage.getItem( `${sessionString}` ))
 

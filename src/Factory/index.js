@@ -72,18 +72,20 @@ export const getKeyFromStore = ( pre = preceding ) => {
     return Object.keys(localStorage).filter( value => value.substring( 0, pre.length) === pre )
 }
 
-export const getLastLoggedInUser = () => {
-    let allStoredUser = getKeyFromStore(preceding).flatMap( key => {
-        let storedValue = getUserFromStore(key)
-        return storedValue
-    })
+export const getAllStoredSession = () => getKeyFromStore(preceding).flatMap( key =>  getUserFromStore(key) )
 
-    return allStoredUser.reduce((ding, dong) => (ding.loggedInAt > dong.loggedInAt) ? ding : dong)
+export const getLastLoggedInUser = () => {
+    
+    return getAllStoredSession().reduce((ding, dong) => (ding.loggedInAt > dong.loggedInAt) ? ding : dong)
 
 }
 
+export const ifSessionExistInDB = ( userInfo ) => {
+    return getAllStoredSession()?.find( user => user.sessionID === userInfo.sessionID )
+}
+
 let timer = null,
-    idleTime = 60000
+    idleTime = 6000
 
 export const foreground = ( userInfo, focus ) => {
     if ( timer !== null) {
@@ -148,13 +150,24 @@ export const background = ( userInfo ) => {
 
         let index = thisUser?.findIndex( user => user.sessionID === userInfo.sessionID )
 
+        // let thisParticularSession = thisUser?.find( user => user.sessionID === userInfo.sessionID )
+
         if ( thisUser[index]?.status !== 'idle') {
+        // if ( thisParticularSession?.status !== 'idle') {
+
             let newObj = {
                 ...thisUser[index],
                 status: 'idle',
             }
 
+            // let newObj = {
+            //     ...thisParticularSession,
+            //     status: 'idle',
+            // }
+
             thisUser[index] = newObj
+
+            // thisUser = thisUser.map( user => user.sessionID === newObj.sessionID ? newObj : user )
 
             // console.log(thisUser, newObj)
 
@@ -163,10 +176,7 @@ export const background = ( userInfo ) => {
                 sessionStorage.setItem( sessionString, JSON.stringify( thisUser[index] ) )
             }, idleTime)
 
-            // timer()
-
         }
-
         
     } else if ( thisUser?.sessionID === userInfo?.sessionID ) {
         if ( thisUser?.status !== 'idle' ) {

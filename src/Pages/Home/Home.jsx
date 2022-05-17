@@ -76,7 +76,7 @@ const Home = () => {
   }, [])
 
    /**
-   * @description what this does is set the presence status of all signed in user
+   * @description what this does is set the presence status of all signed in user, the status could be active || idle
    */
   useEffect(() => {
     const isLoggedIN = JSON.parse(sessionStorage.getItem( `${sessionString}` ))
